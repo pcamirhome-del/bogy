@@ -7,10 +7,6 @@
     <title>NexusFlow | Marketing Automation</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <script>
-        // Critical Shim for Vercel/Browser environments to prevent "process is not defined" errors
-        window.process = window.process || { env: {} };
-    </script>
     <style>
         body { font-family: 'Inter', sans-serif; }
         .mono { font-family: 'JetBrains Mono', monospace; }
@@ -23,7 +19,36 @@
           to { opacity: 1; transform: translateY(0); }
         }
         .animate-fade-in { animation: fade-in 0.5s ease-out forwards; }
+
+        #error-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.98);
+            z-index: 9999;
+            padding: 2rem;
+            color: #f87171;
+            font-family: 'JetBrains Mono', monospace;
+            overflow: auto;
+        }
     </style>
+    <script>
+        // Catch global errors to help users debug Vercel deployment issues visually
+        window.onerror = function(message, source, lineno, colno, error) {
+            const overlay = document.getElementById('error-overlay');
+            if (overlay) {
+                overlay.style.display = 'block';
+                const div = document.createElement('div');
+                div.style.marginBottom = '10px';
+                div.style.padding = '10px';
+                div.style.borderLeft = '4px solid #ef4444';
+                div.style.background = '#1e293b';
+                div.textContent = `[System Error]: ${message} (${source}:${lineno}:${colno})`;
+                overlay.appendChild(div);
+            }
+            return false;
+        };
+    </script>
 <script type="importmap">
 {
   "imports": {
@@ -37,6 +62,10 @@
 </script>
 </head>
 <body class="bg-slate-950 text-slate-100 antialiased overflow-hidden">
+    <div id="error-overlay">
+        <h1 style="font-size: 1.5rem; color: white; margin-bottom: 1rem; border-bottom: 1px solid #334155; padding-bottom: 0.5rem;">NexusFlow System Monitor</h1>
+        <p style="color: #94a3b8; font-size: 0.875rem; margin-bottom: 2rem;">A critical error occurred during execution. Please check your environment variables and Vercel configuration.</p>
+    </div>
     <div id="root"></div>
 </body>
 </html>

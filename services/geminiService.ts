@@ -1,28 +1,14 @@
 
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
 
-const getApiKey = () => {
-  // Safely access process.env which is now shimmed in index.html
-  try {
-    return (window as any).process?.env?.API_KEY || "";
-  } catch {
-    return "";
-  }
-};
-
-const getAIClient = () => {
-  const apiKey = getApiKey();
-  if (!apiKey) {
-    console.warn("NexusFlow: API_KEY not detected in process.env");
-  }
-  return new GoogleGenAI({ apiKey });
-};
+// Strictly adhering to Google GenAI SDK guidelines.
+// "Assume process.env.API_KEY is pre-configured, valid, and accessible."
 
 export const chatWithKnowledgeBase = async (message: string, history: any[]) => {
   try {
-    const ai = getAIClient();
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview', // Using latest Gemini 3 Flash
+      model: 'gemini-3-flash-preview',
       contents: message,
       config: {
         systemInstruction: "You are the NexusFlow AI Marketing Assistant. Help the user with marketing automation and sales strategy.",
@@ -42,9 +28,9 @@ export const chatWithKnowledgeBase = async (message: string, history: any[]) => 
 
 export const findLeadsWithMaps = async (query: string, lat?: number, lng?: number) => {
   try {
-    const ai = getAIClient();
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview', // Maps grounding is robust in Gemini 3 series
+      model: 'gemini-3-flash-preview',
       contents: `Search for business leads: ${query}`,
       config: {
         tools: [{ googleMaps: {} }],
@@ -67,6 +53,10 @@ export const findLeadsWithMaps = async (query: string, lat?: number, lng?: numbe
 };
 
 export const checkAPIStatus = () => {
-  const key = getApiKey();
-  return key && key.length > 10; // Basic validity check
+  try {
+    // Check if the variable exists in the environment
+    return typeof process !== 'undefined' && !!process.env.API_KEY;
+  } catch {
+    return false;
+  }
 };
