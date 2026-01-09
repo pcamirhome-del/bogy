@@ -1,0 +1,7 @@
+{
+  "name": "NexusFlow Marketing Automation",
+  "description": "A comprehensive marketing automation dashboard for Google Maps scraping, social media interaction, WhatsApp retargeting, and AI-powered lead engagement.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
